@@ -6,9 +6,7 @@ const bodyParser = require('body-parser');
 const passport = require('passport');
 const session = require('express-session');
 const socket = require('socket.io');
-
-const dbConfig = require('./db.config');
-
+const mongoose = require('mongoose');
 // dbConfig.initializeUsers();
 
 const PORT = process.env.PORT || 6000;
@@ -23,23 +21,38 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(session({
-  secret: 'chessgame',
-  resave: false,
-  saveUninitialized: false,
-  // cookie: {
-  //   secure: false
-  // },
+app.use(
+  session({
+    secret: 'chessgame',
+    resave: false,
+    saveUninitialized: false,
+    // cookie: {
+    //   secure: false
+    // },
 
-  path: '/*', // NEEDED
-}));
+    path: '/*', // NEEDED
+  })
+);
 
-app.use(bodyParser.urlencoded({
-  extended: true,
-}));
-app.use(bodyParser.json({
-  limit: '50mb',
-}));
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+  })
+);
+app.use(
+  bodyParser.json({
+    limit: '50mb',
+  })
+);
+
+mongoose
+  .connect('mongodb://localhost/chessapi', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+  })
+  .then(() => console.log('Database connected'))
+  .catch(console.error);
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -65,7 +78,7 @@ io.on('connection', (socket) => {
   socket.on('JOIN_GAME', (game) => {
     // game.id = Math.floor(Math.random() * 100000000);
     io.emit('START_GAME', game);
-  })
+  });
 
   socket.on('MOVE_PIECE', (data) => {
     console.log('RECEIVED MOVE', data);
@@ -86,8 +99,7 @@ io.on('connection', (socket) => {
 
   socket.on('SET_IDS', (ids) => {
     io.emit('RECEIVE_IDS', ids);
-  })
-
+  });
 });
 
 const gameIo = socket(server, { path: '/game/:id' });

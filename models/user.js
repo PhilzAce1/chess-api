@@ -1,35 +1,44 @@
+const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const { Client } = require('pg');
+const jwt = require('jsonwebtoken');
 
-const dataStore = require('../assets/store');
+const userSchema = mongoose.Schema({
+  username: {
+    type: String,
+    minLength: 3,
+    maxLength: 20,
+    default: 'no Username',
+  },
+  password: {
+    type: String,
+    required: true,
+    minlength: 5,
+    maxlength: 1024,
+  },
+});
 
-const { dbConfig } = dataStore;
+userSchema.pre('save', function (next) {
+  const user = this;
+  if (user.isModified('password')) {
+    bcrypt.genSalt(10, function (err, salt) {
+      if (err) return next(err);
+      bcrypt.hash(user.password, salt, function (err, hash) {
+        if (err) return next(err);
+        user.password = hash;
+        next();
+      });
+    });
+  } else {
+    next();
+  }
+});
+userSchema.methods.generateAuthToken = function () {
+  const token = jwt.sign(
+    { _id: this._id, role: this.role },
+    config.get('jwtPrivateKey')
+  );
 
-const checkPassword = function (password, passwordHash) {
-  return bcrypt.compareSync(password, passwordHash);
+  return token;
 };
 
-const checkUser = function (username, password, done) {
-  console.log('CHECK USER FUNCTION RUNNING', username, password);
-  const client = new Client();
-
-  client.connect().then(() => {
-    const sql = 'SELECT * FROM users WHERE username = $1';
-    const params = [username];
-
-    return client.query(sql, params);
-  }).then((results) => {
-    console.log('username results', results.rows);
-    const user = results.rows[0];
-
-    if (user && checkPassword(password, user.password_hash)) {
-      console.log('Should be a successful login');
-      done(null, user);
-    } else {
-      console.log('The user probably entered the incorrect password');
-      done(null, false);
-    }
-  });
-};
-
-module.exports = { checkUser };
+module.exports = mongoose.model('Marketer', userSchema);
