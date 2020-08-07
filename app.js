@@ -1,27 +1,20 @@
 console.clear();
-require('dotenv').config();
+// require('dotenv').config();
 
 const express = require('express');
+const cors = require('cors');
 const app = express();
 const bodyParser = require('body-parser');
 const socket = require('socket.io');
 const mongoose = require('mongoose');
 // dbConfig.initializeUsers();
 
+app.use(cors());
+
 app.get('/', (req, res) => {
   res.send('working');
 });
-const PORT = 3000;
-
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Credentials', true);
-  res.header('Access-Control-Allow-Origin', process.env.CLIENT);
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Accept');
-  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-  res.header('Access-Control-Max-Age', 1728000);
-
-  next();
-});
+const PORT = process.env.PORT || 5000;
 
 app.use(
   bodyParser.urlencoded({
