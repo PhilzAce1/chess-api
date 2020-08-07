@@ -33,11 +33,7 @@ userSchema.pre('save', function (next) {
   }
 });
 userSchema.methods.generateAuthToken = function () {
-  const token = jwt.sign(
-    { _id: this._id, role: this.role },
-    config.get('jwtPrivateKey')
-  );
-
+  const token = jwt.sign({ _id: this._id, role: this.role }, 'jwtPrivateKey');
   return token;
 };
 

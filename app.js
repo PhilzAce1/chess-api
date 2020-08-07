@@ -1,15 +1,17 @@
+console.clear();
 require('dotenv').config();
 
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
-const passport = require('passport');
-const session = require('express-session');
 const socket = require('socket.io');
 const mongoose = require('mongoose');
 // dbConfig.initializeUsers();
 
-const PORT = process.env.PORT || 6000;
+app.get('/', (req, res) => {
+  res.send('working');
+});
+const PORT = 3000;
 
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Credentials', true);
@@ -20,19 +22,6 @@ app.use((req, res, next) => {
 
   next();
 });
-
-app.use(
-  session({
-    secret: 'chessgame',
-    resave: false,
-    saveUninitialized: false,
-    // cookie: {
-    //   secure: false
-    // },
-
-    path: '/*', // NEEDED
-  })
-);
 
 app.use(
   bodyParser.urlencoded({
@@ -54,11 +43,7 @@ mongoose
   .then(() => console.log('Database connected'))
   .catch(console.error);
 
-app.use(passport.initialize());
-app.use(passport.session());
-require('./passportconfig').configure(passport);
-
-app.use('/api/auth/', require('./routes/auth'));
+app.use('/api/auth', require('./routes/auth'));
 
 const server = app.listen(PORT, () => {
   console.log(`server running on PORT ${PORT}`);
