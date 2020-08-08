@@ -1,6 +1,5 @@
 console.clear();
 // require('dotenv').config();
-
 const express = require('express');
 const cors = require('cors');
 const app = express();
@@ -10,7 +9,6 @@ const mongoose = require('mongoose');
 // dbConfig.initializeUsers();
 
 app.use(cors());
-
 app.get('/', (req, res) => {
   res.send('working');
 });
@@ -74,7 +72,6 @@ io.on('connection', (socket) => {
   socket.on('SELECT_PIECE', (data) => {
     io.emit('PUSH_SELECT_PIECE', data);
   });
-
   socket.on('SET_IDS', (ids) => {
     io.emit('RECEIVE_IDS', ids);
   });
