@@ -42,7 +42,7 @@ const server = app.listen(PORT, () => {
 });
 
 const io = socket(server);
-
+io.set('origins', '*:*');
 io.on('connection', (socket) => {
   console.log('SOCKET IS CONNECTED');
   // here you can start emitting events to the client
