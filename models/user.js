@@ -37,4 +37,4 @@ userSchema.methods.generateAuthToken = function () {
   return token;
 };
 
-module.exports = mongoose.model('Marketer', userSchema);
+module.exports = mongoose.model('User', userSchema);

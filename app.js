@@ -1,5 +1,3 @@
-console.clear();
-// require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const app = express();
@@ -26,11 +24,14 @@ app.use(
 );
 
 mongoose
-  .connect('mongodb://localhost/chessapi', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useCreateIndex: true,
-  })
+  .connect(
+    'mongodb+srv://ace:philzpy162@cluster0.cl6wg.mongodb.net/Chessapi?retryWrites=true&w=majority',
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useCreateIndex: true,
+    }
+  )
   .then(() => console.log('Database connected'))
   .catch(console.error);
 
