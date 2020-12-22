@@ -25,7 +25,8 @@ app.use(
 
 mongoose
   .connect(
-    'mongodb+srv://ace:philzpy162@cluster0.cl6wg.mongodb.net/Chessapi?retryWrites=true&w=majority',
+  process.env.MongoURI
+       ,
     {
       useNewUrlParser: true,
       useUnifiedTopology: true,
